@@ -1,5 +1,6 @@
 from tkinter import *
 from tkinter import messagebox
+import sqlite3
 import subprocess
 
 
@@ -7,18 +8,21 @@ def login_check():
     username = e1.get()
     password = e2.get()
 
-    if username == "" and password == "":
-        messagebox.showinfo("", "Blank Not allowed")
-    elif username == "Admin" and password == "123":
-        messagebox.showinfo("", "Login Success")
-        root.destroy()
-        subprocess.run(["python", "homepage.py"])
+    connection = sqlite3.connect("app_data_base.db")
+    cursor = connection.cursor()
+    cursor.execute("SELECT * FROM user_detail")
+    result = cursor.fetchall()
+    for item in result:
+        if item[0] == username and item[1] == password:
+            messagebox.showinfo("", "Login Success")
+            root.destroy()
+            subprocess.run(["python", "homepage.py"])
     else:
-        messagebox.showinfo("", "Incorrect Username and Password")
+        messagebox.showinfo("", "incorrect username or password")
 
 
 def create_account():
-    subprocess.run(["python", "register.py"])
+    subprocess.run(["python", "registration.py"])
 
 
 root = Tk()
