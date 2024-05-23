@@ -3,7 +3,7 @@ from tkinter import messagebox
 import subprocess
 
 
-def check():
+def login_check():
     username = e1.get()
     password = e2.get()
 
@@ -15,6 +15,10 @@ def check():
         subprocess.run(["python", "homepage.py"])
     else:
         messagebox.showinfo("", "Incorrect Username and Password")
+
+
+def create_account():
+    subprocess.run(["python", "register.py"])
 
 
 root = Tk()
@@ -29,6 +33,7 @@ e2 = Entry(root)
 e2.grid(row=1, column=1)
 e2.config(show="*")
 
-Button(root, text="Login", command=check, height=3, width=13).grid(row=3, column=0, columnspan=2)
+Button(root, text="Login", command=login_check).grid(row=3, column=0, columnspan=2)
+Button(root, text="Register for a new account", command=create_account).grid(row=4, column=0, columnspan=2, pady=10)
 
 root.mainloop()
