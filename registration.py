@@ -9,14 +9,23 @@ def create_account():
     connection = sqlite3.connect("app_data_base.db")
     cursor = connection.cursor()
 
-    cursor.execute(f"INSERT INTO user_detail VALUES ('{username}','{password}')")
-
-    print("user added to database")
-    connection.commit()
-    connection.close()
-
-    messagebox.showinfo("registration complete", "Successfully registered. You can now login to the app.")
-    root.destroy()
+    if username == "" or password == "":
+        messagebox.showwarning("error", "Input can't be empty")
+    else:
+        cursor.execute("SELECT * FROM user_detail")
+        result = cursor.fetchall()
+        for item in result:
+            if item[0] == username and item[1] == password:
+                messagebox.showwarning("error", "Username and password already exist. Pick another one.")
+                connection.close()
+                break
+        else:
+            cursor.execute(f"INSERT INTO user_detail VALUES ('{username}','{password}')")
+            print("user added to database")
+            connection.commit()
+            connection.close()
+            messagebox.showinfo("registration complete", "Successfully registered. You can now login to the app.")
+            root.destroy()
 
 
 root = Tk()

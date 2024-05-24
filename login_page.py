@@ -8,17 +8,21 @@ def login_check():
     username = e1.get()
     password = e2.get()
 
-    connection = sqlite3.connect("app_data_base.db")
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM user_detail")
-    result = cursor.fetchall()
-    for item in result:
-        if item[0] == username and item[1] == password:
-            messagebox.showinfo("", "Login Success")
-            root.destroy()
-            subprocess.run(["python", "homepage.py"])
+    if username == "" or password == "":
+        messagebox.showwarning("error", "input can't be empty")
     else:
-        messagebox.showinfo("", "incorrect username or password")
+        connection = sqlite3.connect("app_data_base.db")
+        cursor = connection.cursor()
+        cursor.execute("SELECT * FROM user_detail")
+        result = cursor.fetchall()
+        for item in result:
+            if item[0] == username and item[1] == password:
+                messagebox.showinfo("login", "Login Success")
+                root.destroy()
+                subprocess.run(["python", "homepage.py"])
+                break
+        else:
+            messagebox.showwarning("error", "incorrect username or password")
 
 
 def create_account():
