@@ -1,5 +1,6 @@
 from tkinter import *
 import subprocess
+import sqlite3
 
 root = Tk()
 root.title("practice")
@@ -26,9 +27,25 @@ my_entry = Entry(root)
 my_entry.pack(pady=20)
 
 #Add item to listbox
+"""
 list_items = ["One", "Second", "Third", "sleep", "work out", "eat", "wake up", "eat breakfast", "walk the dog", 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,16, 17]
 for item in list_items:
     my_listbox.insert("end", item)
+"""
+
+connection = sqlite3.connect("app_data_base.db")
+cursor = connection.cursor()
+
+for item in cursor.execute("select * from notes"):
+    #can't save list to db because data type is tuple ('charlie',) when getting from the database using print(item)
+    #so changed into print(item[0]) and now the data type is stuff in the tuple which is charlie
+    print(item[0]) 
+
+    my_listbox.insert("end", item[0])
+
+connection.close()
+
+
 
 
 
@@ -90,13 +107,29 @@ delete_cross_off_button.grid(row=1, column=2, padx=5)
 
 
 
+
+
 #menus bar
 main_menu = Menu(root)
 root.config(menu=main_menu)
 
 #functions
 def save_file():
-    pass
+    connection = sqlite3.connect("app_data_base.db")
+    cursor = connection.cursor()
+
+    cursor.execute("DELETE FROM notes")
+
+    #checking the input data type
+    print("--------------------------------")
+    for item in range(my_listbox.size()):
+        print(my_listbox.get(item))
+
+    for item in range(my_listbox.size()):
+        cursor.execute(f"insert into notes values('{my_listbox.get(item)}')")
+
+    connection.commit()
+    connection.close()
 
 def exit():
     root.destroy()
@@ -124,6 +157,7 @@ main_menu.add_cascade(label="Navigate", menu=navigate_menu)
 navigate_menu.add_command(label="Back to Homepage", command=homepage)
 navigate_menu.add_command(label="Alarm page", command=alarm)
 navigate_menu.add_command(label="Calender page", command=calender)
+
 
 
 root.mainloop()
