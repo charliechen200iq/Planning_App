@@ -1,10 +1,20 @@
 from tkinter import *
+from tkinter import messagebox
 import subprocess
 import sqlite3
 
 root = Tk()
 root.title("practice")
 root.geometry("600x600")
+
+def exit_confirm():
+    response = messagebox.askyesno("exit confirm", """Do you wish to exit? \nMake sure to save your notes in the file menu.""")
+    
+    if response == True:
+         root.destroy()
+         return True
+
+
 
 
 
@@ -26,7 +36,7 @@ my_scrollbar.config(command=my_listbox.yview)
 my_entry = Entry(root)
 my_entry.pack(pady=20)
 
-#Add item to listbox
+
 """
 list_items = ["One", "Second", "Third", "sleep", "work out", "eat", "wake up", "eat breakfast", "walk the dog", 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15,16, 17]
 for item in list_items:
@@ -36,12 +46,19 @@ for item in list_items:
 connection = sqlite3.connect("app_data_base.db")
 cursor = connection.cursor()
 
+#Add the saved items from the database
 for item in cursor.execute("select * from notes"):
+    """
+    #checking the data taken from database
+    print(item[0])
     #can't save list to db because data type is tuple ('charlie',) when getting from the database using print(item)
     #so changed into print(item[0]) and now the data type is stuff in the tuple which is charlie
-    print(item[0]) 
-
+    """
     my_listbox.insert("end", item[0])
+
+#Add all the saved cross off items from database
+for item in cursor.execute("select * from cross_off"):
+    my_listbox.itemconfig(item[0], fg="#808080")
 
 connection.close()
 
@@ -118,39 +135,45 @@ def save_file():
     connection = sqlite3.connect("app_data_base.db")
     cursor = connection.cursor()
 
+    #save all the items
     cursor.execute("DELETE FROM notes")
 
-    #checking the input data type
-    print("--------------------------------")
+    """
+    #checking the data saved from notes
+    print("data saved from notes:")
     for item in range(my_listbox.size()):
         print(my_listbox.get(item))
+    """
 
     for item in range(my_listbox.size()):
         cursor.execute(f"insert into notes values('{my_listbox.get(item)}')")
+    
+    #save all the crossed off items
+    cursor.execute("DELETE FROM cross_off")
+
+    for index in range(my_listbox.size()):
+        if my_listbox.itemcget(index, "fg") == "#808080":
+            cursor.execute(f"insert into cross_off values('{index}')")
 
     connection.commit()
     connection.close()
 
-def exit():
-    root.destroy()
-
 def homepage():
-    root.destroy()
-    subprocess.run(["python", "homepage.py"])
+    if exit_confirm() == True:
+        subprocess.run(["python", "homepage.py"])
 
 def alarm():
-    root.destroy()
-    subprocess.run(["python", "alarm.py"])
+    if exit_confirm() == True:
+        subprocess.run(["python", "alarm.py"])
 
 def calender():
-    root.destroy()
-    subprocess.run(["python", "calender.py"])
+    if exit_confirm() == True:
+        subprocess.run(["python", "calender.py"])
 
 #Create a menu items
 file_menu = Menu(main_menu)
 main_menu.add_cascade(label="File", menu=file_menu)
 file_menu.add_command(label="Save", command=save_file)
-file_menu.add_command(label="Exit", command=exit)
 
 navigate_menu = Menu(main_menu)
 main_menu.add_cascade(label="Navigate", menu=navigate_menu)
@@ -160,4 +183,7 @@ navigate_menu.add_command(label="Calender page", command=calender)
 
 
 
+
+
+root.protocol("WM_DELETE_WINDOW", exit_confirm)
 root.mainloop()
