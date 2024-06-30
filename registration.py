@@ -6,26 +6,27 @@ import sqlite3
 def create_account():
     username = e1.get()
     password = e2.get()
+
     connection = sqlite3.connect("app_data_base.db")
     cursor = connection.cursor()
 
     if username == "" or password == "":
         messagebox.showwarning("error", "Input can't be empty")
     else:
-        cursor.execute("SELECT * FROM user_detail")
-        result = cursor.fetchall()
-        for item in result:
-            if item[0] == username and item[1] == password:
-                messagebox.showwarning("error", "Username and password already exist. Pick another one.")
-                connection.close()
+        for item in cursor.execute("SELECT * FROM user_detail"):
+            if item[0] == username:
+                messagebox.showwarning("error", "Username already exist. Pick another one.")
                 break
         else:
             cursor.execute(f"INSERT INTO user_detail VALUES ('{username}','{password}')")
-            print("user added to database")
-            connection.commit()
-            connection.close()
+            cursor.execute(f"CREATE TABLE IF NOT EXISTS {username}_notes_items(items)")
+            cursor.execute(f"CREATE TABLE IF NOT EXISTS {username}_notes_cross_off_items(item_index)")
             messagebox.showinfo("registration complete", "Successfully registered. You can now login to the app.")
             root.destroy()
+    
+    connection.commit()
+    cursor.close()
+    connection.close()
 
 
 root = Tk()

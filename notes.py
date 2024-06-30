@@ -46,20 +46,24 @@ for item in list_items:
 connection = sqlite3.connect("app_data_base.db")
 cursor = connection.cursor()
 
+#this is the current user that's using the app
+username =  cursor.execute("select username from current_user").fetchone()[0]
+
+
 #Add the saved items from the database
-for item in cursor.execute("select * from notes"):
-    """
+for item in cursor.execute(f"select * from {username}_notes_items"):
     #checking the data taken from database
-    print(item[0])
+    #print(item[0])
     #can't save list to db because data type is tuple ('charlie',) when getting from the database using print(item)
     #so changed into print(item[0]) and now the data type is stuff in the tuple which is charlie
-    """
     my_listbox.insert("end", item[0])
 
 #Add all the saved cross off items from database
-for item in cursor.execute("select * from cross_off"):
+for item in cursor.execute(f"select * from {username}_notes_cross_off_items"):
     my_listbox.itemconfig(item[0], fg="#808080")
 
+connection.commit()
+cursor.close()
 connection.close()
 
 
@@ -136,7 +140,7 @@ def save_file():
     cursor = connection.cursor()
 
     #save all the items
-    cursor.execute("DELETE FROM notes")
+    cursor.execute(f"DELETE FROM {username}_notes_items")
 
     """
     #checking the data saved from notes
@@ -146,16 +150,17 @@ def save_file():
     """
 
     for item in range(my_listbox.size()):
-        cursor.execute(f"insert into notes values('{my_listbox.get(item)}')")
+        cursor.execute(f"insert into {username}_notes_items values('{my_listbox.get(item)}')")
     
     #save all the crossed off items
-    cursor.execute("DELETE FROM cross_off")
+    cursor.execute(f"DELETE FROM {username}_notes_cross_off_items")
 
     for index in range(my_listbox.size()):
         if my_listbox.itemcget(index, "fg") == "#808080":
-            cursor.execute(f"insert into cross_off values('{index}')")
+            cursor.execute(f"insert into {username}_notes_cross_off_items values('{index}')")
 
     connection.commit()
+    cursor.close()
     connection.close()
 
 def homepage():

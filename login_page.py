@@ -8,16 +8,20 @@ def login_check():
     username = e1.get()
     password = e2.get()
 
+    connection = sqlite3.connect("app_data_base.db")
+    cursor = connection.cursor()
+    
     if username == "" or password == "":
         messagebox.showwarning("error", "input can't be empty")
     else:
-        connection = sqlite3.connect("app_data_base.db")
-        cursor = connection.cursor()
-        cursor.execute("SELECT * FROM user_detail")
-        result = cursor.fetchall()
-        for item in result:
+        for item in cursor.execute("SELECT * FROM user_detail"):
             if item[0] == username and item[1] == password:
                 messagebox.showinfo("login", "Login Success")
+                cursor.execute("DELETE FROM current_user")
+                cursor.execute(f"INSERT INTO current_user VALUES ('{username}','{password}')")
+                connection.commit()
+                cursor.close()
+                connection.close()
                 root.destroy()
                 subprocess.run(["python", "homepage.py"])
                 break
