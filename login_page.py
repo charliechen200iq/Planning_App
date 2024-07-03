@@ -3,6 +3,9 @@ from tkinter import messagebox
 import sqlite3
 import subprocess
 
+root = Tk()
+root.title("Login")
+
 
 def login_check():
     username = e1.get()
@@ -32,9 +35,6 @@ def login_check():
 def create_account():
     subprocess.run(["python", "registration.py"])
 
-
-root = Tk()
-root.title("Login")
 
 Label(root, text="UserName").grid(row=0, column=0)
 e1 = Entry(root)

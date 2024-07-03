@@ -3,7 +3,7 @@ from tkcalendar import *
 import subprocess
 
 root = Tk()
-root.title("calender")
+root.title("calendar")
 root.geometry("500x500")
 
 calendar = Calendar(root, setmode="day")

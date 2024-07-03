@@ -5,9 +5,9 @@ root = Tk()
 root.title("Planning App")
 
 
-def calender():
+def calendar():
     root.destroy()
-    subprocess.run(["python", "calender.py"])
+    subprocess.run(["python", "calendar_page.py"])
 
 
 def notes():
@@ -20,10 +20,10 @@ def alarm():
     subprocess.run(["python", "alarm.py"])
 
 
-# calender
-Label(root, text="calender").grid(row=0, column=0, padx=50)
-calender_button = Button(root, text="calender", command=calender)
-calender_button.grid(row=1, column=0, padx=50)
+# calendar
+Label(root, text="calendar").grid(row=0, column=0, padx=50)
+calendar_button = Button(root, text="calendar", command=calendar)
+calendar_button.grid(row=1, column=0, padx=50)
 
 # notes
 Label(root, text="notes").grid(row=0, column=1, padx=50)

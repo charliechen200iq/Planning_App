@@ -171,9 +171,9 @@ def alarm():
     if exit_confirm() == True:
         subprocess.run(["python", "alarm.py"])
 
-def calender():
+def calendar():
     if exit_confirm() == True:
-        subprocess.run(["python", "calender.py"])
+        subprocess.run(["python", "calendar_page.py"])
 
 #Create a menu items
 file_menu = Menu(main_menu)
@@ -184,7 +184,7 @@ navigate_menu = Menu(main_menu)
 main_menu.add_cascade(label="Navigate", menu=navigate_menu)
 navigate_menu.add_command(label="Back to Homepage", command=homepage)
 navigate_menu.add_command(label="Alarm page", command=alarm)
-navigate_menu.add_command(label="Calender page", command=calender)
+navigate_menu.add_command(label="Calendar page", command=calendar)
 
 
 

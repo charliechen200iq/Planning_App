@@ -4,6 +4,9 @@ import sqlite3
 import re
 
 
+root = Tk()
+root.title("registration")
+
 def create_account():
     username = e1.get()
     password = e2.get()
@@ -16,7 +19,16 @@ def create_account():
         messagebox.showwarning("error", "Input can't be empty.")
         return 
     
-    if len(password) < 8 or len(password) > 30:
+    for item in cursor.execute("SELECT * FROM user_detail"):
+        if item[0] == username:
+            messagebox.showwarning("error", "Username already exist. Pick another one.")
+            return
+        
+    if username[0].isnumeric() == True:
+        messagebox.showwarning("error", "Username can't start with numbers 0-9.")
+        return
+    
+    if len(password) < 8 or len(password) > 20:
         messagebox.showwarning("error", "Password must be between 8 and 20 characters.")
         return 
     
@@ -27,11 +39,6 @@ def create_account():
     if password != confirm_password:
         messagebox.showwarning("error", "Passwords don't match.")
         return
-
-    for item in cursor.execute("SELECT * FROM user_detail"):
-        if item[0] == username:
-            messagebox.showwarning("error", "Username already exist. Pick another one.")
-            return
         
     cursor.execute(f"INSERT INTO user_detail VALUES ('{username}','{password}')")
     cursor.execute(f"CREATE TABLE IF NOT EXISTS {username}_notes_items(items)")
@@ -42,10 +49,6 @@ def create_account():
     connection.commit()
     cursor.close()
     connection.close()
-
-
-root = Tk()
-root.title("registration")
 
 Label(root, text="Choose a UserName").grid(row=0, column=0)
 e1 = Entry(root)

@@ -22,7 +22,7 @@ def homepage():
 
 def calendar():
     root.destroy()
-    subprocess.run(["python", "calendar.py"])
+    subprocess.run(["python", "calendar_page.py"])
 
 def notes():
     root.destroy()
