@@ -5,7 +5,7 @@ import sqlite3
 
 root = Tk()
 root.title("practice")
-root.geometry("600x600")
+root.geometry("500x500")
 
 def exit_confirm():
     response = messagebox.askyesno("exit confirm", """Do you wish to exit? \nMake sure to save your notes in the file menu.""")
