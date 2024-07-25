@@ -3,6 +3,13 @@ from tkinter import messagebox
 import subprocess
 import sqlite3
 
+
+
+unvalid = ['/', "'"]
+crossed_off_colour = "#808080"
+
+
+
 root = Tk()
 root.title("practice")
 root.geometry("500x500")
@@ -33,8 +40,12 @@ my_listbox.config(yscrollcommand=my_scrollbar.set)
 my_scrollbar.config(command=my_listbox.yview)
 
 #user entry
-my_entry = Entry(root)
-my_entry.pack(pady=20)
+entry_frame = Frame(root, pady=10)
+entry_frame.pack()
+my_entry = Entry(entry_frame)
+my_entry.grid(row=0, column=0)
+message = "can't save these charaters:   " + " ".join(unvalid)
+Label(entry_frame, text=message).grid(row=0, column=1)
 
 
 """
@@ -60,7 +71,7 @@ for item in cursor.execute(f"select * from {username}_notes_items"):
 
 #Add all the saved cross off items from database
 for item in cursor.execute(f"select * from {username}_notes_cross_off_items"):
-    my_listbox.itemconfig(item[0], fg="#808080")
+    my_listbox.itemconfig(item[0], fg=crossed_off_colour)
 
 connection.commit()
 cursor.close()
@@ -76,8 +87,8 @@ button_frame.pack(pady=10)
 
 #button functions
 def add_items():
-    my_listbox.insert(END, my_entry.get())
-    my_entry.delete(0, END)
+    my_listbox.insert(END, my_entry.get()) 
+    my_entry.delete(0, END)             
 
 def delete_items():
     for item in reversed(my_listbox.curselection()):
@@ -88,7 +99,7 @@ def delete_all_items():
 
 def cross_off_items():
     for item in my_listbox.curselection():
-        my_listbox.itemconfig(item, fg="#808080")
+        my_listbox.itemconfig(item, fg=crossed_off_colour)
     my_listbox.selection_clear(0, END)
 
 def uncross_off_items():
@@ -99,14 +110,14 @@ def uncross_off_items():
 def delete_cross_off_items():
 
     for item in range(my_listbox.size()-1, -1, -1):
-        if my_listbox.itemcget(item, "fg") == "#808080":
+        if my_listbox.itemcget(item, "fg") == crossed_off_colour:
             my_listbox.delete(item)
     """ 
     #another way to do it
     count = 0
     while count < my_listbox.size():
         print(count)
-        if my_listbox.itemcget(count, 'fg')=="#808080":
+        if my_listbox.itemcget(count, 'fg')==crossed_off_colour:
             my_listbox.delete(count)
         else:
             count += 1
@@ -136,11 +147,16 @@ root.config(menu=main_menu)
 
 #functions
 def save_file():
+    for item in range(my_listbox.size()):
+        for charater in my_listbox.get(item):
+            for i in unvalid:
+                if charater == i:
+                    messagebox.showwarning("error", "can't save these charaters:   " + " ".join(unvalid) + "\nplease delete them to save")
+                    return
+                     
+
     connection = sqlite3.connect("app_data_base.db")
     cursor = connection.cursor()
-
-    #save all the items
-    cursor.execute(f"DELETE FROM {username}_notes_items")
 
     """
     #checking the data saved from notes
@@ -149,6 +165,9 @@ def save_file():
         print(my_listbox.get(item))
     """
 
+    #save all the items
+    cursor.execute(f"DELETE FROM {username}_notes_items")
+
     for item in range(my_listbox.size()):
         cursor.execute(f"insert into {username}_notes_items values('{my_listbox.get(item)}')")
     
@@ -156,7 +175,7 @@ def save_file():
     cursor.execute(f"DELETE FROM {username}_notes_cross_off_items")
 
     for index in range(my_listbox.size()):
-        if my_listbox.itemcget(index, "fg") == "#808080":
+        if my_listbox.itemcget(index, "fg") == crossed_off_colour:
             cursor.execute(f"insert into {username}_notes_cross_off_items values('{index}')")
 
     connection.commit()

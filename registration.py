@@ -27,7 +27,16 @@ def create_account():
     if username[0].isnumeric() == True:
         messagebox.showwarning("error", "Username can't start with numbers 0-9.")
         return
+
+
+    unvalid = ['/', "\\", "'", ',']
+    for charater in username:
+        for i in unvalid:
+            if charater == i:
+                messagebox.showwarning("error", "username can't be these charaters:  " + " ".join(unvalid))
+                return
     
+
     if len(password) < 8 or len(password) > 20:
         messagebox.showwarning("error", "Password must be between 8 and 20 characters.")
         return 
