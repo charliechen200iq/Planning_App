@@ -16,16 +16,16 @@ def create_account():
     cursor = connection.cursor()
 
     if username == "" or password == "" or confirm_password == "":
-        messagebox.showwarning("error", "Input can't be empty.")
+        messagebox.showerror("error", "Input can't be empty.")
         return 
     
     for item in cursor.execute("SELECT * FROM user_detail"):
         if item[0] == username:
-            messagebox.showwarning("error", "Username already exist. Pick another one.")
+            messagebox.showerror("error", "Username already exist. Pick another one.")
             return
         
     if username[0].isnumeric() == True:
-        messagebox.showwarning("error", "Username can't start with numbers 0-9.")
+        messagebox.showerror("error", "Username can't start with numbers 0-9.")
         return
 
 
@@ -33,20 +33,20 @@ def create_account():
     for charater in username:
         for i in unvalid:
             if charater == i:
-                messagebox.showwarning("error", "username can't be these charaters:  " + " ".join(unvalid))
+                messagebox.showerror("error", "username can't be these charaters:  " + " ".join(unvalid))
                 return
     
 
     if len(password) < 8 or len(password) > 20:
-        messagebox.showwarning("error", "Password must be between 8 and 20 characters.")
+        messagebox.showerror("error", "Password must be between 8 and 20 characters.")
         return 
     
     if not re.search(r'[A-Z]', password) or not re.search(r'\d', password):
-        messagebox.showwarning("error", "Password must contain at least one\n uppercase letter and one number.")
+        messagebox.showerror("error", "Password must contain at least one\n uppercase letter and one number.")
         return 
     
     if password != confirm_password:
-        messagebox.showwarning("error", "Passwords don't match.")
+        messagebox.showerror("error", "Passwords don't match.")
         return
         
     cursor.execute(f"INSERT INTO user_detail VALUES ('{username}','{password}')")

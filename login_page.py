@@ -15,7 +15,7 @@ def login_check():
     cursor = connection.cursor()
     
     if username == "" or password == "":
-        messagebox.showwarning("error", "input can't be empty")
+        messagebox.showerror("error", "input can't be empty")
     else:
         for item in cursor.execute("SELECT * FROM user_detail"):
             if item[0] == username and item[1] == password:
@@ -29,7 +29,7 @@ def login_check():
                 subprocess.run(["python", "homepage.py"])
                 break
         else:
-            messagebox.showwarning("error", "incorrect username or password")
+            messagebox.showerror("error", "incorrect username or password")
 
 
 def create_account():

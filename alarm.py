@@ -1,60 +1,91 @@
 from tkinter import *
+from tkinter import messagebox
 import subprocess
+import time
 
 root = Tk()
 root.title("alarm")
 root.geometry("500x500")
 
-
+#countdown timer
 #variables
-hour = StringVar()
-hour.set("00")
-minute = StringVar()
-minute.set("00")
-second = StringVar()
-second.set("00")
+countdown_second = StringVar()
+countdown_second.set("00")
+countdown_minute = StringVar()
+countdown_minute.set("00")
+countdown_hour = StringVar()
+countdown_hour.set("00")
 
 
 
-#display the timer
-timer_frame = Frame(root, pady=50)
-timer_frame.pack()
+#display the countdown timer
+countdown_frame = Frame(root, pady=50)
+countdown_frame.pack()
 
-Label(timer_frame, text="hour").grid(row=0, column=0)
-hour_entry = Entry(timer_frame, textvariable=hour)
-hour_entry.grid(row=1, column=0)
+Label(countdown_frame, text="Countdown Timer").grid(row=0, column=1)
 
-Label(timer_frame, text="minute").grid(row=0, column=1)
-minute_entry = Entry(timer_frame, textvariable=minute)
-minute_entry.grid(row=1, column=1)
+Label(countdown_frame, text="second").grid(row=1, column=2)
+second_entry = Entry(countdown_frame, textvariable=countdown_second)
+second_entry.grid(row=2, column=2)
 
-Label(timer_frame, text="second").grid(row=0, column=2)
-second_entry = Entry(timer_frame, textvariable=second)
-second_entry.grid(row=1, column=2)
+Label(countdown_frame, text="minute").grid(row=1, column=1)
+minute_entry = Entry(countdown_frame, textvariable=countdown_minute)
+minute_entry.grid(row=2, column=1)
 
-
-
-#timer function
-def countdown():
-    pass
-
-def stop():
-    pass
-
-def reset():
-    pass
+Label(countdown_frame, text="hour").grid(row=1, column=0)
+hour_entry = Entry(countdown_frame, textvariable=countdown_hour)
+hour_entry.grid(row=2, column=0)
 
 
 
-#button
-button_frame = Frame(root)
-button_frame.pack()
+#countdown timer function
+def start_countdown():
+    try:
+        total_seconds = int(hour_entry.get())*3600 + int(minute_entry.get())*60  + int(second_entry.get())
+        if total_seconds < 0:
+            messagebox.showerror("error", "Please input postive numebers")
+    except:
+        messagebox.showerror("error", "Please input valid numbers.")
+    else:
+        global time_running
+        time_running = True
+        while total_seconds > 0 and time_running:
+            time.sleep(1)
+            total_seconds -= 1
+            
+            sec = total_seconds%60
+            min = int(total_seconds/60) % 60
+            hou = int(total_seconds/3600) 
+        
+            countdown_second.set(f"{sec:02}")
+            countdown_minute.set(f"{min:02}")
+            countdown_hour.set(f"{hou:02}")
 
-Button(button_frame, text="start", command=countdown).grid(row=0, column=0, padx=10)
-Button(button_frame, text="stop", command=stop).grid(row=0, column=1, padx=10)
-Button(button_frame, text="reset", command=reset).grid(row=0, column=2, padx=10)
+            root.update()
+
+        if total_seconds == 0:
+            messagebox.showinfo("Info", "Time is up!")
+
+def stop_countdown():
+    global time_running 
+    time_running = False
+
+def reset_countdown():
+    global time_running 
+    time_running = False
+    countdown_second.set("00")
+    countdown_minute.set("00")
+    countdown_hour.set("00")
 
 
+
+#countdown button
+countdown_button_frame = Frame(root)
+countdown_button_frame.pack()
+
+Button(countdown_button_frame, text="start", command=start_countdown).grid(row=0, column=0, padx=10)
+Button(countdown_button_frame, text="stop", command=stop_countdown).grid(row=0, column=1, padx=10)
+Button(countdown_button_frame, text="reset", command=reset_countdown).grid(row=0, column=2, padx=10)
 
 
 

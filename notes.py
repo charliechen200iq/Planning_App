@@ -151,7 +151,7 @@ def save_file():
         for charater in my_listbox.get(item):
             for i in unvalid:
                 if charater == i:
-                    messagebox.showwarning("error", "can't save these charaters:   " + " ".join(unvalid) + "\nplease delete them to save")
+                    messagebox.showerror("error", "can't save these charaters:   " + " ".join(unvalid) + "\nplease delete them to save")
                     return
                      
 
