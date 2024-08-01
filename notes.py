@@ -6,7 +6,7 @@ import sqlite3
 
 
 root = Tk()
-root.title("practice")
+root.title("Notes")
 root.geometry("500x500")
 
 
@@ -163,15 +163,15 @@ def homepage():
     if exit_confirm() == True:
         subprocess.run(["python", "homepage.py"])
 
-#go to the alarm page
-def alarm():
-    if exit_confirm() == True:
-        subprocess.run(["python", "alarm.py"])
-
 #go the calendar page
 def calendar():
     if exit_confirm() == True:
         subprocess.run(["python", "calendar_page.py"])
+
+#go to the timer page
+def timer():
+    if exit_confirm() == True:
+        subprocess.run(["python", "timer.py"])
 
 #creating and displaying menu
 main_menu = Menu(root)
@@ -184,8 +184,8 @@ file_menu.add_command(label="Save", command=save_file)
 navigate_menu = Menu(main_menu)
 main_menu.add_cascade(label="Navigate", menu=navigate_menu)
 navigate_menu.add_command(label="Back to Homepage", command=homepage)
-navigate_menu.add_command(label="Alarm page", command=alarm)
-navigate_menu.add_command(label="Calendar page", command=calendar)
+navigate_menu.add_command(label="Calendar", command=calendar)
+navigate_menu.add_command(label="Timer", command=timer)
 
 
 

@@ -6,7 +6,7 @@ import time
 
 
 root = Tk()
-root.title("alarm")
+root.title("Timer")
 root.geometry("500x500")
 
 
@@ -124,8 +124,8 @@ root.config(menu=main_menu)
 navigate_menu = Menu(main_menu)
 main_menu.add_cascade(label="Navigate", menu=navigate_menu)
 navigate_menu.add_command(label="Back to Homepage", command=homepage)
-navigate_menu.add_command(label="Calendar page", command=calendar_page)
-navigate_menu.add_command(label="Notes page", command=notes)
+navigate_menu.add_command(label="Calendar", command=calendar_page)
+navigate_menu.add_command(label="Notes", command=notes)
 
 
 

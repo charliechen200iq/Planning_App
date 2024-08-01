@@ -6,7 +6,7 @@ import re
 
 
 root = Tk()
-root.title("registration")
+root.title("Registration")
 
 
 
