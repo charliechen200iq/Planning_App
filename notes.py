@@ -12,7 +12,7 @@ root.geometry("500x500")
 
 
 #a list of all the invalid charater that would rise error to the program 
-invalid = ['/', "'"]
+invalid = ["'"]
 #the colour of items that's being acrossed off
 crossed_off_colour = "#808080"
 

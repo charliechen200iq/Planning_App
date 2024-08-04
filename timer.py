@@ -2,6 +2,7 @@ from tkinter import *
 from tkinter import messagebox
 import subprocess
 import time
+import sqlite3
 
 
 
@@ -12,6 +13,8 @@ root.geometry("500x500")
 
 
 #varibles:
+#a list of the all the tasks from notes
+tasks = []
 #keep track of the seconds
 countdown_second = StringVar()
 countdown_second.set("00")
@@ -25,12 +28,42 @@ countdown_hour.set("00")
 time_running = True
 
 
-#countdown variable:
-#display the countdown timer
-countdown_frame = Frame(root, pady=50)
-countdown_frame.pack()
 
-Label(countdown_frame, text="Countdown Timer").grid(row=0, column=1)
+dropdown_menu_frame = Frame(root)
+dropdown_menu_frame.pack(pady=20)
+
+connection = sqlite3.connect("app_data_base.db")
+cursor = connection.cursor()
+
+#get the current user that's using the app
+username =  cursor.execute("select username from current_user").fetchone()[0]
+
+#Add the saved items from the database to the dropdown menu tasks
+for item in cursor.execute(f"select * from {username}_notes_items"):
+    tasks.extend(item)
+
+connection.commit()
+cursor.close()
+connection.close()
+
+#display the drop down menu
+Label(dropdown_menu_frame, text="select task:").grid(row=0, column=0, padx=10)
+try:
+    chosen_task = StringVar()
+    chosen_task.set(tasks[0])
+    option_menu = OptionMenu(dropdown_menu_frame, chosen_task, *tasks)
+    option_menu.grid(row=0, column=1)
+except:
+    messagebox.showinfo("No tasks", "You have no tasks saved from notes page")
+    Label(dropdown_menu_frame, text="None").grid(row=0, column=1, padx=10)
+
+
+
+#display the countdown timer
+countdown_frame = Frame(root)
+countdown_frame.pack(pady=20)
+
+Label(countdown_frame, text="input countdown time").grid(row=0, column=1, pady=10)
 
 Label(countdown_frame, text="second").grid(row=1, column=2)
 second_entry = Entry(countdown_frame, textvariable=countdown_second)
@@ -94,7 +127,7 @@ def reset_countdown():
 
 #countdown timer buttons
 countdown_button_frame = Frame(root)
-countdown_button_frame.pack()
+countdown_button_frame.pack(pady=20)
 Button(countdown_button_frame, text="start", command=start_countdown).grid(row=0, column=0, padx=10)
 Button(countdown_button_frame, text="stop", command=stop_countdown).grid(row=0, column=1, padx=10)
 Button(countdown_button_frame, text="reset", command=reset_countdown).grid(row=0, column=2, padx=10)

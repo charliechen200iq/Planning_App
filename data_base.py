@@ -12,3 +12,6 @@ cursor.execute("CREATE TABLE IF NOT EXISTS current_user(username, password)")
 connection.commit()
 cursor.close()
 connection.close()
+
+
+#recreate table structure (item, index, state)
