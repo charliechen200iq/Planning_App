@@ -5,6 +5,8 @@ import subprocess
 import sqlite3
 
 
+#a list of all the invalid charater that would rise error to the program 
+invalid = ["'"]
 
 root = Tk()
 root.title("Calendar")
@@ -30,9 +32,13 @@ def add_event():
     username =  cursor.execute("select username from current_user").fetchone()[0]
 
     #save event to notes data
-    cursor.execute(f"insert into {username}_notes_items values('{event}')")
-    event_entry.delete(0, END)
-    messagebox.showinfo("Added", "Your event is successfully added to notes.")
+    try:
+        task_index = cursor.execute(f"select count(*) from {username}_notes_data").fetchone()[0]
+        cursor.execute(f"insert into {username}_notes_data values('{task_index}', '{event}', 'uncross')")
+        event_entry.delete(0, END)
+        messagebox.showinfo("Added", "Your event is successfully added to notes.")
+    except:
+        messagebox.showerror("error", "can't save these charaters:   " + " ".join(invalid) + "\nplease delete them to save")
 
     connection.commit()
     cursor.close()

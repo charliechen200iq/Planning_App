@@ -50,6 +50,7 @@ def create_account():
         messagebox.showerror("error", "Password must be between 8 and 20 characters.")
         return 
     
+    #check that the password has one upper case, and one number
     if not re.search(r'[A-Z]', password) or not re.search(r'\d', password):
         messagebox.showerror("error", "Password must contain at least one\n uppercase letter and one number.")
         return 
@@ -60,8 +61,7 @@ def create_account():
         
     #register the user and create relevent tables to store their data. 
     cursor.execute(f"INSERT INTO user_detail VALUES ('{username}','{password}')")
-    cursor.execute(f"CREATE TABLE IF NOT EXISTS {username}_notes_items(items)")
-    cursor.execute(f"CREATE TABLE IF NOT EXISTS {username}_notes_cross_off_items(item_index)")
+    cursor.execute(f"CREATE TABLE IF NOT EXISTS {username}_notes_data(indexes, tasks, cross_or_uncross)")
     messagebox.showinfo("registration complete", "Successfully registered. You can now login to the app.")
     root.destroy()
     

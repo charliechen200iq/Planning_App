@@ -13,7 +13,7 @@ root.geometry("500x500")
 
 
 #varibles:
-#a list of the all the tasks from notes
+#a list of the all the uncrossed tasks from notes
 tasks = []
 #keep track of the seconds
 countdown_second = StringVar()
@@ -38,23 +38,23 @@ cursor = connection.cursor()
 #get the current user that's using the app
 username =  cursor.execute("select username from current_user").fetchone()[0]
 
-#Add the saved items from the database to the dropdown menu tasks
-for item in cursor.execute(f"select * from {username}_notes_items"):
-    tasks.extend(item)
+#Add the uncrossed tasks along with it's index from the database to the dropdown menu tasks
+for task in cursor.execute(f"select * from {username}_notes_data"):
+    if task[2] == "uncross":
+        tasks.append(task[0] + ":   " + task[1])
 
 connection.commit()
 cursor.close()
 connection.close()
 
 #display the drop down menu
-Label(dropdown_menu_frame, text="select task:").grid(row=0, column=0, padx=10)
-try:
+Label(dropdown_menu_frame, text="select task from notes:").grid(row=0, column=0, padx=10)
+if len(tasks) != 0:
     chosen_task = StringVar()
     chosen_task.set(tasks[0])
     option_menu = OptionMenu(dropdown_menu_frame, chosen_task, *tasks)
     option_menu.grid(row=0, column=1)
-except:
-    messagebox.showinfo("No tasks", "You have no tasks saved from notes page")
+else:
     Label(dropdown_menu_frame, text="None").grid(row=0, column=1, padx=10)
 
 
@@ -108,7 +108,29 @@ def start_countdown():
             root.update()
 
         if total_seconds == 0:
-            messagebox.showinfo("Info", "Time is up!")
+            time_up()
+
+#alert the user when time is up and cross of their task if they want
+def time_up():
+    if len(tasks) != 0:
+        response = messagebox.askyesno("Time's up", "Time is up! Would you like to cross off this task?")
+        if response == True:
+            task_index = chosen_task.get().split(":   ")[0]
+            
+            connection = sqlite3.connect("app_data_base.db")
+            cursor = connection.cursor()
+            
+            #update task to be crossed off
+            cursor.execute(f"UPDATE {username}_notes_data SET cross_or_uncross = 'cross' WHERE indexes='{task_index}'")
+
+            connection.commit()
+            cursor.close()
+            connection.close()
+
+            root.destroy()
+            subprocess.run(["python", "timer.py"])
+    else:
+        messagebox.showinfo("Time's up", "Time is up!")
 
 #pause the countdown
 def stop_countdown():
