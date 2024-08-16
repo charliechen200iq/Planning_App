@@ -64,14 +64,13 @@ def create_account():
         root.destroy()
         subprocess.run(["python", "login_page.py"])
     except:
-        #display messages when username can't be saved due to special charaters affecting the code
-        messagebox.showerror("error", "Username containing special charaters can't be saved")
+        #display messages when username or password can't be saved due to special characters affecting the code
+        messagebox.showerror("error", "Username and Password containing special characters can't be saved properly, please delete them.")
         
-        #changes discard and connection closed for app_data_bade.db
+        #changes discarded and connection closed for app_data_bade.db
         connection.rollback()
         cursor.close()
         connection.close()
-
 
 #take the user back to login page in case they want to
 def login_page():

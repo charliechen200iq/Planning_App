@@ -56,37 +56,38 @@ def fetch_tasks():
     cursor.close()
     connection.close()
 
-#start counting down the time that the user inputed and displaying it
+#start counting down the time that the user inputted and displaying it
 def start_countdown():
-    #get the total seconds needed to countdown, and display input error if can't
+    #get the total seconds needed to countdown, and display input error if unexpected input
     try:
         total_seconds = int(hour_entry.get())*3600 + int(minute_entry.get())*60  + int(second_entry.get())
-        if total_seconds <= 0:
-            messagebox.showerror("error", "Please input postive numebers")
     except:
-        messagebox.showerror("error", "Please input valid numbers.")
+        messagebox.showerror("error", "Please input postive integers.")
     else:
-        #start countdowning down
-        global time_running
-        time_running = True
-        while total_seconds > 0 and time_running:
-            time.sleep(1)
-            total_seconds -= 1
+        #make sure it's a positive number and then start countdowning down
+        if total_seconds <= 0:
+            messagebox.showerror("error", "Please input postive integers.")
+        else:        
+            global time_running
+            time_running = True
+            while total_seconds > 0 and time_running:
+                time.sleep(1)
+                total_seconds -= 1
+                
+                #convert total seconds remaining into hour:minute:seconds each time and displaying it. 
+                sec = total_seconds%60
+                min = int(total_seconds/60) % 60
+                hou = int(total_seconds/3600) 
             
-            #convert total seconds remaining into hour:minute:seconds each time and displaying it. 
-            sec = total_seconds%60
-            min = int(total_seconds/60) % 60
-            hou = int(total_seconds/3600) 
-        
-            countdown_second.set(f"{sec:02}")
-            countdown_minute.set(f"{min:02}")
-            countdown_hour.set(f"{hou:02}")
+                countdown_second.set(f"{sec:02}")
+                countdown_minute.set(f"{min:02}")
+                countdown_hour.set(f"{hou:02}")
 
-            root.update()
+                root.update()
 
-        #alert the user when time is up and cross off their task if they want
-        if total_seconds == 0:
-            time_up()
+            #alert the user when time is up and cross off their task if they want
+            if total_seconds == 0:
+                time_up()
 
 #alert the user when time is up and cross of their task if they want
 def time_up():
@@ -97,14 +98,14 @@ def time_up():
             #get the task_index
             task_index = chosen_task.get().split(":   ")[0]
             
-            #connection established for app_data_bade.db
+            #connection established for app_data_base.db
             connection = sqlite3.connect("app_data_base.db")
             cursor = connection.cursor()
             
             #update task to be crossed off
             cursor.execute(f"UPDATE {username}_notes_data SET cross_or_uncross = 'cross' WHERE indexes='{task_index}'")
 
-            #connection closed for app_data_bade.db
+            #connection closed for app_data_base.db
             connection.commit()
             cursor.close()
             connection.close()

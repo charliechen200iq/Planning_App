@@ -11,6 +11,7 @@ root.title("Calendar")
 root.geometry("500x300")
 
 
+
 #connection established for app_data_base.db
 connection = sqlite3.connect("app_data_base.db")
 cursor = connection.cursor()
@@ -22,7 +23,7 @@ username = cursor.execute("select username from current_user").fetchone()[0]
 connection.commit()
 cursor.close()
 connection.close()
-#a list of all the invalid charater that would rise error to the program 
+#a list of all the invalid characters that would rise error to the program 
 invalid = ["'"]
 
 
@@ -46,7 +47,7 @@ def add_event():
         #saves the changes
         connection.commit()
     except:
-        messagebox.showerror("error", "can't save these charaters properly:   " + " ".join(invalid) + "\nplease delete them to save")
+        messagebox.showerror("error", "can't save these special characters properly:   " + " ".join(invalid) + "\nplease delete them to save")
         #discard the changes
         connection.rollback()
 

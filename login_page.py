@@ -30,7 +30,7 @@ def login_check():
                 cursor.execute("DELETE FROM current_user")
                 cursor.execute(f"INSERT INTO current_user VALUES ('{username}','{password}')")
                 
-                #connection closed for app_data_base.db
+                #changes saved and connection closed for app_data_base.db
                 connection.commit()
                 cursor.close()
                 connection.close()
@@ -41,8 +41,8 @@ def login_check():
         else:
             messagebox.showerror("error", "incorrect username or password")
 
-            #connection closed for app_data_base.db
-            connection.commit()
+            #changes discarded and connection closed for app_data_base.db
+            connection.rollback()
             cursor.close()
             connection.close()
 

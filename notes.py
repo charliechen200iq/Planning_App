@@ -22,7 +22,7 @@ username =  cursor.execute("select username from current_user").fetchone()[0]
 connection.commit()
 cursor.close()
 connection.close()
-#a list of all the invalid charater that would rise error to the program 
+#a list of all the invalid characters that would rise error to the program 
 invalid = ["'"]
 #the colour of tasks that's being acrossed off
 crossed_off_colour = "#808080"
@@ -106,17 +106,15 @@ def save_and_exit():
             connection.close()
             root.destroy()
             return True
-
         except:
         #display error if can't be saved
-            messagebox.showerror("error", "can't save these charaters properly:   " + " ".join(invalid) + "\nplease delete them to save")
+            messagebox.showerror("error", "can't save these special characters properly:   " + " ".join(invalid) + "\nplease delete them to save")
             
             #discard changes and connection closed for app_data_base.db
             connection.rollback()
             cursor.close()
             connection.close()
         
-
 #go to the homepage
 def homepage():
     if save_and_exit() == True:
@@ -148,13 +146,12 @@ my_scrollbar.pack(side=RIGHT, fill=BOTH)
 my_listbox.config(yscrollcommand=my_scrollbar.set)
 my_scrollbar.config(command=my_listbox.yview)
 
-#user entry label
+#user entry
 entry_frame = Frame(root, pady=10)
 entry_frame.pack()
+Label(entry_frame, text="input tasks:").grid(row=0, column=0, padx=10)
 my_entry = Entry(entry_frame)
-my_entry.grid(row=0, column=0)
-message = "can't save these charaters properly:   " + " ".join(invalid)
-Label(entry_frame, text=message).grid(row=0, column=1)
+my_entry.grid(row=0, column=1)
 
 #fetch and add all the user's saved task from user's note data table to notes
 fetch_database_tasks()
@@ -188,6 +185,6 @@ navigate_menu.add_command(label="Timer", command=timer)
 
 
 
-#when exiting run the exit_confirm function to remind the user to save their notes 
+#when exiting run the save_and_exit function to save the user's notes and exit the program
 root.protocol("WM_DELETE_WINDOW", save_and_exit)
 root.mainloop()
