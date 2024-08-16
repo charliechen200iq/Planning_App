@@ -19,26 +19,32 @@ def login_check():
     #connection established for app_data_base.db
     connection = sqlite3.connect("app_data_base.db")
     cursor = connection.cursor()
-    
-    #check if the input username and password is the same as registered 
+     
     if username == "" or password == "":
         messagebox.showerror("error", "input can't be empty")
     else:
+        #check if the input username and password is the same as registered
         for item in cursor.execute("SELECT * FROM user_detail"):
             if item[0] == username and item[1] == password:
                 messagebox.showinfo("login", "Login Success")
                 cursor.execute("DELETE FROM current_user")
                 cursor.execute(f"INSERT INTO current_user VALUES ('{username}','{password}')")
+                
+                #connection closed for app_data_base.db
+                connection.commit()
+                cursor.close()
+                connection.close()
+
                 root.destroy()
                 subprocess.run(["python", "homepage.py"])
                 break
         else:
             messagebox.showerror("error", "incorrect username or password")
-    
-    #connection closed for app_data_base.db
-    connection.commit()
-    cursor.close()
-    connection.close()
+
+            #connection closed for app_data_base.db
+            connection.commit()
+            cursor.close()
+            connection.close()
 
 #go to a registration page
 def create_account():

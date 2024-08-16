@@ -12,12 +12,7 @@ root.geometry("300x150")
 
 
 
-#a list of all the invalid charater that would rise error to the program
-#invalid = ['/', "\\", "'", ',']
-
-
-
-#check if the username and password meet the requirements to be registered
+#check if the username and password meet the requirements and then register the user
 def create_account():
     username = e1.get()
     password = e2.get()
@@ -42,14 +37,6 @@ def create_account():
         messagebox.showerror("error", "Username can't start with numbers 0-9.")
         return
 
-    """
-    for charater in username:
-        for i in invalid:
-            if charater == i:
-                messagebox.showerror("error", "username can't be these charaters:  " + " ".join(invalid))
-                return
-    """
-
     #check that the password meet the requirements
     if len(password) < 8 or len(password) > 20:
         messagebox.showerror("error", "Password must be between 8 and 20 characters.")
@@ -64,19 +51,27 @@ def create_account():
         return
     
     try:    
-        #create relevent tables to store their data and register the user.
+        #create relevent tables to store their data and register the user
         cursor.execute(f"CREATE TABLE IF NOT EXISTS {username}_notes_data(indexes, tasks, cross_or_uncross)")
         cursor.execute(f"INSERT INTO user_detail VALUES ('{username}','{password}')")
+        
+        #changes saved and connection closed for app_data_bade.db
+        connection.commit()
+        cursor.close()
+        connection.close()
+    
         messagebox.showinfo("registration complete", "Successfully registered. You can now login to the app.")
         root.destroy()
         subprocess.run(["python", "login_page.py"])
     except:
+        #display messages when username can't be saved due to special charaters affecting the code
         messagebox.showerror("error", "Username containing special charaters can't be saved")
+        
+        #changes discard and connection closed for app_data_bade.db
+        connection.rollback()
+        cursor.close()
+        connection.close()
 
-    #connection closed for app_data_bade.db
-    connection.commit()
-    cursor.close()
-    connection.close()
 
 #take the user back to login page in case they want to
 def login_page():

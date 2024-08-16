@@ -16,7 +16,7 @@ root.geometry("500x500")
 connection = sqlite3.connect("app_data_base.db")
 cursor = connection.cursor()
 
-#fetching the current username of the user that's using the app
+#fetching the username of the current user that's using the app
 username = cursor.execute("select username from current_user").fetchone()[0]
 
 #connection closed for app_data_base.db
@@ -56,12 +56,12 @@ def fetch_tasks():
     cursor.close()
     connection.close()
 
-#start counting down the time that the user inputed
+#start counting down the time that the user inputed and displaying it
 def start_countdown():
     #get the total seconds needed to countdown, and display input error if can't
     try:
         total_seconds = int(hour_entry.get())*3600 + int(minute_entry.get())*60  + int(second_entry.get())
-        if total_seconds < 0:
+        if total_seconds <= 0:
             messagebox.showerror("error", "Please input postive numebers")
     except:
         messagebox.showerror("error", "Please input valid numbers.")
@@ -84,7 +84,7 @@ def start_countdown():
 
             root.update()
 
-        #alert the user when time is up and cross of their task if they want
+        #alert the user when time is up and cross off their task if they want
         if total_seconds == 0:
             time_up()
 
@@ -151,15 +151,14 @@ def close_program():
 
 
 
-#fetch all the uncrossed tasks from the notes pages and add it on the tasks list
+#fetch all the uncrossed tasks from the notes pages and add it to the tasks list
 fetch_tasks()
 
-#display the drop down menu containing uncrossed tasks
+#display the drop down menu containing uncrossed tasks, or display 'None' when there is no tasks. 
 dropdown_menu_frame = Frame(root)
 dropdown_menu_frame.pack(pady=20)
 
 Label(dropdown_menu_frame, text="select task from notes:").grid(row=0, column=0, padx=10)
-#display the drop down menu containing uncrossed tasks, or display None when there is no tasks. 
 try:
     chosen_task = StringVar()
     chosen_task.set(tasks[0])

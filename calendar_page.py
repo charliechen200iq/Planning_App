@@ -11,7 +11,17 @@ root.title("Calendar")
 root.geometry("500x300")
 
 
+#connection established for app_data_base.db
+connection = sqlite3.connect("app_data_base.db")
+cursor = connection.cursor()
 
+#fetching the username of the current user that's using the app
+username = cursor.execute("select username from current_user").fetchone()[0]
+
+#connection closed for app_data_base.db
+connection.commit()
+cursor.close()
+connection.close()
 #a list of all the invalid charater that would rise error to the program 
 invalid = ["'"]
 
@@ -26,21 +36,21 @@ def add_event():
     connection = sqlite3.connect("app_data_base.db")
     cursor = connection.cursor()
 
-    #get the current user that's using the app
-    username = cursor.execute("select username from current_user").fetchone()[0]
-
     #added the event to notes data
     try:
-        #the index start at 0, but the count is the number of items, so when I add the new item its index becomes the count. 
+        #the index start at 0, and count(*) is the number of items in the notes data table, so the index of the new item is the count. 
         task_index = cursor.execute(f"select count(*) from {username}_notes_data").fetchone()[0]
         cursor.execute(f"insert into {username}_notes_data values('{task_index}', '{event}', 'uncross')")
         event_entry.delete(0, END)
         messagebox.showinfo("added", "Your event is successfully added to notes.")
+        #saves the changes
+        connection.commit()
     except:
-        messagebox.showerror("error", "can't save these charaters:   " + " ".join(invalid) + "\nplease delete them to save")
+        messagebox.showerror("error", "can't save these charaters properly:   " + " ".join(invalid) + "\nplease delete them to save")
+        #discard the changes
+        connection.rollback()
 
     #connection closed for app_data_base.db
-    connection.commit()
     cursor.close()
     connection.close()
 

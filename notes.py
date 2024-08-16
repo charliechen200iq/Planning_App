@@ -15,7 +15,7 @@ root.geometry("500x500")
 connection = sqlite3.connect("app_data_base.db")
 cursor = connection.cursor()
 
-#get the current user that's using the app
+#fetching the username of the current user that's using the app
 username =  cursor.execute("select username from current_user").fetchone()[0]
 
 #connection closed for app_data_base.db
@@ -29,7 +29,7 @@ crossed_off_colour = "#808080"
 
 
 
-#fetch and add all the user's saved task from user's note data table to notes
+#fetch and add all the user's saved tasks from user's note data table to notes
 def fetch_database_tasks():
     #connection established for app_data_base.db
     connection = sqlite3.connect("app_data_base.db")
@@ -54,7 +54,7 @@ def add_tasks():
     my_listbox.insert(END, my_entry.get()) 
     my_entry.delete(0, END)             
 
-#delete sekected tasks from the notes
+#delete selected tasks from the notes
 def delete_tasks():
     for task in reversed(my_listbox.curselection()):
         my_listbox.delete(task)
@@ -81,51 +81,56 @@ def delete_cross_off_tasks():
         if my_listbox.itemcget(task, "fg") == crossed_off_colour:
             my_listbox.delete(task)
 
-#save all the notes to the database
-def save_file():
-    #connection established for app_data_base.db
-    connection = sqlite3.connect("app_data_base.db")
-    cursor = connection.cursor()
-
-    #save all tasks to user's notes data table, and if error occur notify the user about invalid characters.
-    try:
-        cursor.execute(f"DELETE FROM {username}_notes_data")
-        for i in range(my_listbox.size()):
-            if my_listbox.itemcget(i, "fg") == crossed_off_colour:
-                cursor.execute(f"insert into {username}_notes_data values('{i}', '{my_listbox.get(i)}', 'cross')")
-            else:
-                cursor.execute(f"insert into {username}_notes_data values('{i}', '{my_listbox.get(i)}', 'uncross')")
-        messagebox.showinfo("Saved", "Your notes is successfully saved.")
-    except:
-        messagebox.showerror("error", "can't save these charaters properly:   " + " ".join(invalid) + "\nplease delete them to save")
+#save all the notes to the database and exit the program
+def save_and_exit():
+    response = messagebox.askyesno("exit confirm", "Do you wish to save and exit?")
     
-    #connection closed for app_data_base.db
-    connection.commit()
-    cursor.close()
-    connection.close()
+    if response == True:
+        #connection established for app_data_base.db
+        connection = sqlite3.connect("app_data_base.db")
+        cursor = connection.cursor()
+
+        #save all tasks to user's notes data table and exit
+        try:
+            cursor.execute(f"DELETE FROM {username}_notes_data")
+            for i in range(my_listbox.size()):
+                if my_listbox.itemcget(i, "fg") == crossed_off_colour:
+                    cursor.execute(f"insert into {username}_notes_data values('{i}', '{my_listbox.get(i)}', 'cross')")
+                else:
+                    cursor.execute(f"insert into {username}_notes_data values('{i}', '{my_listbox.get(i)}', 'uncross')")
+            messagebox.showinfo("Saved", "Your notes is successfully saved.")
+
+            #save changes and connection closed for app_data_base.db
+            connection.commit()
+            cursor.close()
+            connection.close()
+            root.destroy()
+            return True
+
+        except:
+        #display error if can't be saved
+            messagebox.showerror("error", "can't save these charaters properly:   " + " ".join(invalid) + "\nplease delete them to save")
+            
+            #discard changes and connection closed for app_data_base.db
+            connection.rollback()
+            cursor.close()
+            connection.close()
+        
 
 #go to the homepage
 def homepage():
-    if exit_confirm() == True:
+    if save_and_exit() == True:
         subprocess.run(["python", "homepage.py"])
 
 #go the calendar page
 def calendar():
-    if exit_confirm() == True:
+    if save_and_exit() == True:
         subprocess.run(["python", "calendar_page.py"])
 
 #go to the timer page
 def timer():
-    if exit_confirm() == True:
+    if save_and_exit() == True:
         subprocess.run(["python", "timer.py"])
-
-#remind the user to save their notes when exiting 
-def exit_confirm():
-    response = messagebox.askyesno("exit confirm", """Do you wish to exit? \nMake sure to save your notes in the file menu.""")
-    
-    if response == True:
-         root.destroy()
-         return True
 
 
 
@@ -168,16 +173,12 @@ cross_off_button = Button(button_frame, text="cross off tasks", command=cross_of
 cross_off_button.grid(row=1, column=0, padx=5)
 uncross_off_button = Button(button_frame, text="uncross off tasks", command=uncross_off_tasks)
 uncross_off_button.grid(row=1, column=1, padx=5)
-delete_cross_off_button = Button(button_frame, text="delete_cross_off_button", command=delete_cross_off_tasks)
+delete_cross_off_button = Button(button_frame, text="delete crossed off tasks", command=delete_cross_off_tasks)
 delete_cross_off_button.grid(row=1, column=2, padx=5)
 
 #menu
 main_menu = Menu(root)
 root.config(menu=main_menu)
-
-file_menu = Menu(main_menu)
-main_menu.add_cascade(label="File", menu=file_menu)
-file_menu.add_command(label="Save", command=save_file)
 
 navigate_menu = Menu(main_menu)
 main_menu.add_cascade(label="Navigate", menu=navigate_menu)
@@ -188,5 +189,5 @@ navigate_menu.add_command(label="Timer", command=timer)
 
 
 #when exiting run the exit_confirm function to remind the user to save their notes 
-root.protocol("WM_DELETE_WINDOW", exit_confirm)
+root.protocol("WM_DELETE_WINDOW", save_and_exit)
 root.mainloop()
